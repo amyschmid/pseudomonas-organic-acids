@@ -1,0 +1,1870 @@
+---
+title: "lund_pseudo_collab_FINAL"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+#set up dependencies
+```{r}
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(plyr)
+library(corrplot)
+library(Hmisc)
+library(rpgm)
+```
+
+
+#Import and plot data for phenom growth functions.
+```{r}
+#Navigate to "output" folder, then import PA01 acetic acid data
+
+pao1.acetic<-read.csv (file = "PA01-acetic/function.csv")
+
+#reshape data for line plotting
+
+
+pao1.acetic.long<-gather(pao1.acetic, time, growth.fx, -ph, -mMacid)
+pao1.acetic.long<-pao1.acetic.long[!(pao1.acetic.long$time=="X"),]
+
+pao1.acetic.long$time<-gsub("[stdEf.]", "", pao1.acetic.long$time)
+pao1.acetic.long$time<-as.numeric(pao1.acetic.long$time)/100
+acetic<-pao1.acetic.long[ 1:620,]
+acetic$std<-pao1.acetic.long[621:1240,4]
+
+
+
+```
+
+
+```{r}
+#plot PA01 acetic acid growth data
+p.ac <- ggplot(acetic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+acetic$phrev <- factor(acetic$ph, levels=rev(levels(factor(acetic$ph))))
+
+A <- p.ac+ facet_grid(acetic$phrev ~ acetic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank()) + labs (title = "PA01 Acetate", y = "normalized growth function", x = "time (h)") 
+
+A
+
+```
+
+```{r}
+#import data, PA01 benzoate
+
+pao1.benzoate<-read.csv (file = "PA01-benzoate/function.csv")
+#reshape data for line plotting
+#head(pao1.acetic)
+
+pao1.benzoate.long<-gather(pao1.benzoate, time, growth.fx, -ph, -mMacid)
+pao1.benzoate.long<-pao1.benzoate.long[!(pao1.benzoate.long$time=="X"),]
+
+pao1.benzoate.long$time<-gsub("[stdEf.]", "", pao1.benzoate.long$time)
+pao1.benzoate.long$time<-as.numeric(pao1.benzoate.long$time)/100
+dim (pao1.benzoate.long)
+benzoate<-pao1.benzoate.long[ 1:600,]
+benzoate$std<-pao1.benzoate.long[601:1200,4]
+
+```
+
+```{r}
+#plot the PA01 benzoic acid growth data 
+
+p.ben <- ggplot(benzoate, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+benzoate$phrev <- factor(benzoate$ph, levels=rev(levels(factor(benzoate$ph))))
+
+Be <- p.ben+ facet_grid(benzoate$phrev ~ benzoate$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(), strip.text.x = element_blank(), strip.background = element_blank()) + labs (title = "Benzoate", y = "normalized growth function", x = "time (h)") 
+
+Be
+
+```
+
+```{r}
+#import data, PA01 butyric acid
+
+pao1.butyric<-read.csv (file = "PA01-butyric/function.csv")
+#reshape data for line plotting
+#head(pao1.butyric)
+
+pao1.butyric.long<-gather(pao1.butyric, time, growth.fx, -ph, -mMacid)
+pao1.butyric.long<-pao1.butyric.long[!(pao1.butyric.long$time=="X"),]
+
+pao1.butyric.long$time<-gsub("[stdEf.]", "", pao1.butyric.long$time)
+pao1.butyric.long$time<-as.numeric(pao1.butyric.long$time)/100
+dim (pao1.butyric.long)
+butyric<-pao1.butyric.long[ 1:600,]
+butyric$std<-pao1.butyric.long[601:1200,4]
+
+```
+
+```{r}
+#plot the PA01 butyric acid growth data
+
+p.but <- ggplot(butyric, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+butyric$phrev <- factor(butyric$ph, levels=rev(levels(factor(butyric$ph))))
+
+Bu <- p.but+ facet_grid(butyric$phrev ~ butyric$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(), strip.text.x = element_blank(), strip.background = element_blank()) + labs (title = "Butyrate", y = "normalized growth function", x = "time (h)") 
+
+Bu
+```
+
+```{r}
+#import data, PA01 citric acid growth
+
+pao1.citric<-read.csv (file = "PA01-citric/function.csv")
+#reshape data for line plotting
+#head(pao1.citric)
+
+pao1.citric.long<-gather(pao1.citric, time, growth.fx, -ph, -mMacid)
+pao1.citric.long<-pao1.citric.long[!(pao1.citric.long$time=="X"),]
+
+pao1.citric.long$time<-gsub("[stdEf.]", "", pao1.citric.long$time)
+pao1.citric.long$time<-as.numeric(pao1.citric.long$time)/100
+dim(pao1.citric.long)
+citric<-pao1.citric.long[ 1:620,]
+citric$std<-pao1.citric.long[621:1240,4]
+
+```
+
+```{r}
+#plot the PA01 citric acid growth data
+
+p.cit <- ggplot(citric, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+citric$phrev <- factor(citric$ph, levels=rev(levels(factor(citric$ph))))
+
+C <- p.cit+ facet_grid(citric$phrev ~ citric$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(), strip.text.x = element_blank(), strip.background = element_blank()) + labs (title = "Citrate", y = "normalized growth function", x = "time (h)") 
+
+C
+```
+
+
+
+```{r}
+#import data, PA01 malic acid growth
+
+pao1.malic<-read.csv (file = "PA01-malic/function.csv")
+#reshape data for line plotting
+#head(pao1.malic)
+
+pao1.malic.long<-gather(pao1.malic, time, growth.fx, -ph, -mMacid)
+pao1.malic.long<-pao1.malic.long[!(pao1.malic.long$time=="X"),]
+
+pao1.malic.long$time<-gsub("[stdEf.]", "", pao1.malic.long$time)
+pao1.malic.long$time<-as.numeric(pao1.malic.long$time)/100
+dim(pao1.malic.long)
+malic<-pao1.malic.long[ 1:620,]
+malic$std<-pao1.malic.long[621:1240,4]
+
+```
+
+```{r}
+
+#plot the malic acid growth data
+
+p.mal <- ggplot(malic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+malic$phrev <- factor(malic$ph, levels=rev(levels(factor(malic$ph))))
+
+M <- p.mal + facet_grid(malic$phrev ~ malic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(), strip.text.x = element_blank(), strip.background = element_blank()) + labs (title = "Malate", y = "normalized growth function", x = "time (h)") 
+
+M
+```
+
+```{r}
+#import data, PA01 sorbic acid growth
+
+pao1.sorbic<-read.csv (file = "PA01-potassium-sorbate/function.csv")
+#reshape data for line plotting
+#head(pao1.sorbic)
+
+pao1.sorbic.long<-gather(pao1.sorbic, time, growth.fx, -ph, -mMacid)
+pao1.sorbic.long<-pao1.sorbic.long[!(pao1.sorbic.long$time=="X"),]
+
+pao1.sorbic.long$time<-gsub("[stdEf.]", "", pao1.sorbic.long$time)
+pao1.sorbic.long$time<-as.numeric(pao1.sorbic.long$time)/100
+dim(pao1.sorbic.long)
+sorbic<-pao1.sorbic.long[ 1:480,]
+sorbic$std<-pao1.sorbic.long[481:960,4]
+
+```
+
+```{r}
+
+#plot the sorbic acid growth data
+
+p.sorb <- ggplot(sorbic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+sorbic$phrev <- factor(sorbic$ph, levels=rev(levels(factor(sorbic$ph))))
+
+S <- p.sorb + facet_grid(sorbic$phrev ~ sorbic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(), strip.text.x = element_blank(), strip.background = element_blank()) + labs (title = "Sorbate", y = "normalized growth function", x = "time (h)") 
+
+S
+```
+
+```{r}
+#import data, PA01 propionic acid growth
+
+pao1.prop<-read.csv (file = "PA01-propionic/function.csv")
+#reshape data for line plotting
+#head(pao1.prop)
+
+pao1.prop.long<-gather(pao1.prop, time, growth.fx, -ph, -mMacid)
+pao1.prop.long<-pao1.prop.long[!(pao1.prop.long$time=="X"),]
+
+pao1.prop.long$time<-gsub("[stdEf.]", "", pao1.prop.long$time)
+pao1.prop.long$time<-as.numeric(pao1.prop.long$time)/100
+dim(pao1.prop.long)
+prop<-pao1.prop.long[ 1:560,]
+prop$std<-pao1.prop.long[561:1120,4]
+
+```
+
+```{r}
+ 
+#plot the propionic acid growth data
+
+p.prop <- ggplot(prop, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "cyan", alpha = 0.05) +
+    geom_line(color = "dark blue", size = 0.3, alpha = 1)  
+
+prop$phrev <- factor(prop$ph, levels=rev(levels(factor(prop$ph))))
+
+P <- p.prop + facet_grid(prop$phrev ~ prop$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.y = element_blank(), strip.text.x = element_blank(), strip.background = element_blank()) + labs (title = "Propionate", y = "normalized growth function", x = "time (h)") 
+
+P
+```
+
+```{r}
+#import data, PA1054 acetic acid growth
+
+p54.acetic<-read.csv (file = "PA1054-acetic/function.csv")
+
+#reshape data for line plotting
+p54.acetic.long<-gather(p54.acetic, time, growth.fx, -ph, -mMacid)
+p54.acetic.long<-p54.acetic.long[!(p54.acetic.long$time=="X"),]
+p54.acetic.long$time<-gsub("[stdEf.]", "", p54.acetic.long$time)
+p54.acetic.long$time<-as.numeric(p54.acetic.long$time)/100
+dim (p54.acetic.long)
+p54.acetic<-p54.acetic.long[ 1:620,]
+p54.acetic$std<-p54.acetic.long[621:1240,4]
+
+```
+
+```{r}
+ 
+#plot the P1054 actic acid growth data
+
+p.acetic54 <- ggplot(p54.acetic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "yellow", alpha = 0.05) +
+    geom_line(color = "coral3", size = 0.3, alpha = 1)  
+
+p54.acetic$phrev <- factor(p54.acetic$ph, levels=rev(levels(factor(p54.acetic$ph))))
+
+A54 <- p.acetic54 + facet_grid(p54.acetic$phrev ~ p54.acetic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "P1054 Acetate", y = "normalized growth function", x = "time (h)") 
+
+A54
+```
+
+
+```{r}
+#combine growth data for PA01 and PA1054, acetic acid 
+p54.acetic$strain <- "PA1054"
+acetic$strain <- "PA01"
+strains2 <- rbind(acetic, p54.acetic)
+
+#Plot the data overlay
+
+p.overlay <- ggplot(strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+strains2$phrev <- factor(strains2$ph, levels=rev(levels(factor(strains2$ph))))
+
+A.both <- p.overlay + facet_grid(strains2$phrev ~ strains2$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Acetate", y = "normalized growth function", x = "time (h)") 
+
+
+A.both
+```
+
+```{r}
+#combine data for PA01 and PA1054, acetic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+
+
+A.both.simple <- p.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(), axis.line = element_line("black"), strip.text.y = element_blank(), legend.position = "none") + 
+  labs (title = "Acetic", y = "", x = "") 
+  
+
+
+
+A.both.simple
+```
+
+```{r}
+#import data, PA1054 benzoic acid growth
+
+p54.benzoic<-read.csv (file = "PA1054-sodium-benzoate/function.csv")
+
+#reshape data for line plotting
+p54.benzoic.long<-gather(p54.benzoic, time, growth.fx, -ph, -mMacid)
+p54.benzoic.long<-p54.benzoic.long[!(p54.benzoic.long$time=="X"),]
+p54.benzoic.long$time<-gsub("[stdEf.]", "", p54.benzoic.long$time)
+p54.benzoic.long$time<-as.numeric(p54.benzoic.long$time)/100
+dim (p54.benzoic.long)
+p54.benzoic<-p54.benzoic.long[ 1:620,]
+p54.benzoic$std<-p54.benzoic.long[621:1240,4]
+
+
+```
+
+```{r}
+ 
+#plot the P1054 benzoic acid data
+
+p.benzoic54 <- ggplot(p54.benzoic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "yellow", alpha = 0.05) +
+    geom_line(color = "coral3", size = 0.3, alpha = 1)  
+
+p54.benzoic$phrev <- factor(p54.benzoic$ph, levels=rev(levels(factor(p54.benzoic$ph))))
+
+Be54 <- p.benzoic54 + facet_grid(p54.benzoic$phrev ~ p54.benzoic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.x = element_blank()) + labs (title = "Benzoate", y = "normalized growth function", x = "time (h)") 
+
+Be54
+```
+
+
+```{r}
+#combine plots for PA01 and PA1054, acetic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+p54.benzoic$strain <- "PA1054"
+benzoate$strain <- "PA01"
+benz.strains2 <- rbind(benzoate, p54.benzoic)
+
+be.overlay <- ggplot(benz.strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+ 
+benz.strains2$phrev <- factor(benz.strains2$ph, levels=rev(levels(factor(benz.strains2$ph))))
+
+Be.both <- be.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(benz.strains2$phrev ~ benz.strains2$mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(), axis.line = element_line("black"), legend.position = "none") + 
+  labs (title = "Benzoic", y = "", x = "") 
+  
+
+
+Be.both
+```
+
+```{r}
+#import data, PA1054 butyric acid
+
+p54.butyric<-read.csv (file = "PA1054-butyric/function.csv")
+
+#reshape data for line plotting
+p54.butyric.long<-gather(p54.butyric, time, growth.fx, -ph, -mMacid)
+p54.butyric.long<-p54.butyric.long[!(p54.butyric.long$time=="X"),]
+p54.butyric.long$time<-gsub("[stdEf.]", "", p54.butyric.long$time)
+p54.butyric.long$time<-as.numeric(p54.butyric.long$time)/100
+dim (p54.butyric.long)
+p54.butyric<-p54.butyric.long[ 1:580,]
+p54.butyric$std<-p54.butyric.long[581:1160,4]
+
+```
+
+```{r}
+ 
+#plot the P1054 butyric acid data
+
+p.butyric54 <- ggplot(p54.butyric, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "yellow", alpha = 0.05) +
+    geom_line(color = "coral3", size = 0.3, alpha = 1)  
+
+p54.butyric$phrev <- factor(p54.butyric$ph, levels=rev(levels(factor(p54.butyric$ph))))
+
+Bu54 <- p.butyric54 + facet_grid(p54.butyric$phrev ~p54.butyric$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.x = element_blank()) + labs (title = "Butyrate", y = "normalized growth function", x = "time (h)") 
+
+Bu54
+```
+
+
+```{r}
+#combine data for PA01 and PA1054, butyric acid
+p54.butyric$strain <- "PA1054"
+butyric$strain <- "PA01"
+but.strains2 <- rbind(butyric, p54.butyric)
+
+#Plot the data overlay
+
+p.bu.overlay <- ggplot(but.strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+but.strains2$phrev <- factor(but.strains2$ph, levels=rev(levels(factor(but.strains2$ph))))
+
+Bu.both <- p.bu.overlay + facet_grid(but.strains2$phrev ~but.strains2$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Butyrate", y = "normalized growth function", x = "time (h)") 
+
+Bu.both
+```
+
+```{r}
+#combine plots for PA01 and PA1054, butyric acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+
+
+Bu.both.simple <- p.bu.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none") + 
+  labs (title = "Butyric", y = "", x = "") 
+  
+
+
+
+Bu.both.simple
+```
+
+```{r}
+#import data, PA1054 citric acid
+
+p54.citric<-read.csv (file = "PA1054-citric/function.csv")
+
+#reshape data for line plotting
+p54.citric.long<-gather(p54.citric, time, growth.fx, -ph, -mMacid)
+p54.citric.long<-p54.citric.long[!(p54.citric.long$time=="X"),]
+p54.citric.long$time<-gsub("[stdEf.]", "", p54.citric.long$time)
+p54.citric.long$time<-as.numeric(p54.citric.long$time)/100
+dim (p54.citric.long)
+p54.citric<-p54.citric.long[ 1:620,]
+p54.citric$std<-p54.citric.long[621:1240,4]
+
+```
+
+```{r}
+ 
+#plot the P1054 citric acid data
+
+p.citric54 <- ggplot(p54.citric, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "yellow", alpha = 0.05) +
+    geom_line(color = "coral3", size = 0.3, alpha = 1)  
+
+p54.citric$phrev <- factor(p54.citric$ph, levels=rev(levels(factor(p54.citric$ph))))
+
+C54 <- p.citric54 + facet_grid(p54.citric$phrev ~ p54.citric$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.x = element_blank()) + labs (title = "Citrate", y = "normalized growth function", x = "time (h)") 
+
+C54
+```
+
+```{r}
+#combine data for PA01 and PA1054, citric acid
+p54.citric$strain <- "PA1054"
+citric$strain <- "PA01"
+cit.strains2 <- rbind(citric, p54.citric)
+
+#Plot the data overlay
+
+p.ci.overlay <- ggplot(cit.strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+cit.strains2$phrev <- factor(cit.strains2$ph, levels=rev(levels(factor(cit.strains2$ph))))
+
+C.both <- p.ci.overlay + facet_grid(cit.strains2$phrev ~cit.strains2$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Citrate", y = "normalized growth function", x = "time (h)") 
+
+C.both
+```
+
+```{r}
+#combine plots for PA01 and PA1054, citric acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+
+
+C.both.simple <- p.ci.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none") + 
+  labs (title = "Citric", y = "", x = "") 
+  
+
+
+
+C.both.simple
+```
+
+
+
+```{r}
+#import data, PA1054 malic acid
+
+p54.malic<-read.csv (file = "PA1054-malic/function.csv")
+
+#reshape data for line plotting
+p54.malic.long<-gather(p54.malic, time, growth.fx, -ph, -mMacid)
+p54.malic.long<-p54.malic.long[!(p54.malic.long$time=="X"),]
+p54.malic.long$time<-gsub("[stdEf.]", "", p54.malic.long$time)
+p54.malic.long$time<-as.numeric(p54.malic.long$time)/100
+dim (p54.malic.long)
+p54.malic<-p54.malic.long[ 1:620,]
+p54.malic$std<-p54.malic.long[621:1240,4]
+
+```
+
+
+```{r}
+ 
+#plot the P1054 malic acid data
+
+p.malic54 <- ggplot(p54.malic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "yellow", alpha = 0.05) +
+    geom_line(color = "coral3", size = 0.3, alpha = 1)  
+
+p54.malic$phrev <- factor(p54.malic$ph, levels=rev(levels(factor(p54.malic$ph))))
+
+M54 <- p.malic54 + facet_grid(p54.malic$phrev ~ p54.malic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.x = element_blank()) + labs (title = "Malate", y = "normalized growth function", x = "time (h)") 
+
+M54
+```
+
+
+```{r}
+#combine data for PA01 and PA1054, malic acid
+p54.malic$strain <- "PA1054"
+malic$strain <- "PA01"
+mal.strains2 <- rbind(malic, p54.malic)
+
+#Plot the data overlay
+
+p.ma.overlay <- ggplot(mal.strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+mal.strains2$phrev <- factor(mal.strains2$ph, levels=rev(levels(factor(mal.strains2$ph))))
+
+M.both <- p.ma.overlay + facet_grid(mal.strains2$phrev ~ mal.strains2$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Malate", y = "normalized growth function", x = "time (h)") 
+
+M.both
+```
+
+```{r}
+#combine plots for PA01 and PA1054, malic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+
+
+M.both.simple <- p.ma.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none") + 
+  labs (title = "Malic", y = "", x = "") 
+  
+
+
+
+M.both.simple
+```
+
+```{r}
+#import data, PA1054 sorbic acid
+
+p54.sorbic<-read.csv (file = "PA1054-potassium-sorbate/function.csv")
+
+#reshape data for line plotting
+p54.sorbic.long<-gather(p54.sorbic, time, growth.fx, -ph, -mMacid)
+p54.sorbic.long<-p54.sorbic.long[!(p54.sorbic.long$time=="X"),]
+p54.sorbic.long$time<-gsub("[stdEf.]", "", p54.sorbic.long$time)
+p54.sorbic.long$time<-as.numeric(p54.sorbic.long$time)/100
+dim (p54.sorbic.long)
+p54.sorbic<-p54.sorbic.long[ 1:620,]
+p54.sorbic$std<-p54.sorbic.long[621:1240,4]
+```
+
+```{r}
+ 
+#plot the P1054 sorbic acid data
+
+p.sorbic54 <- ggplot(p54.sorbic, aes(x = time, y = growth.fx)) + 
+    geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), color = "yellow", alpha = 0.05) +
+    geom_line(color = "coral3", size = 0.3, alpha = 1) 
+
+p54.sorbic$phrev <- factor(p54.sorbic$ph, levels=rev(levels(factor(p54.sorbic$ph))))
+
+S54 <- p.sorbic54 + facet_grid(p54.sorbic$phrev ~ p54.sorbic$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), strip.text.x = element_blank()) + labs (title = "Sorbate", y = "normalized growth function", x = "time (h)") 
+
+S54 
+```
+
+```{r}
+#combine data for PA01 and PA1054, sorbic acid
+p54.sorbic$strain <- "PA1054"
+sorbic$strain <- "PA01"
+sor.strains2 <- rbind(sorbic, p54.sorbic)
+
+#Plot the data overlay
+
+p.so.overlay <- ggplot(sor.strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+sor.strains2$phrev <- factor(sor.strains2$ph, levels=rev(levels(factor(sor.strains2$ph))))
+
+S.both <- p.so.overlay + facet_grid(sor.strains2$phrev ~ sor.strains2$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Sorbate", y = "", x = "time (h)") 
+
+S.both
+```
+
+```{r}
+#combine plots for PA01 and PA1054, propionic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+
+
+S.both.simple <- p.so.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none", axis.text.y = element_blank(), axis.ticks.y = element_blank()) + 
+  labs (title = "Sorbic", y = "", x = "time (h)") 
+  
+
+S.both.simple
+```
+
+```{r}
+#import data, PA1054 propionic acid
+
+p54.prop<-read.csv (file = "PA1054-propionic/function.csv")
+
+#reshape data for line plotting
+p54.prop.long<-gather(p54.prop, time, growth.fx, -ph, -mMacid)
+p54.prop.long<-p54.prop.long[!(p54.prop.long$time=="X"),]
+p54.prop.long$time<-gsub("[stdEf.]", "", p54.prop.long$time)
+p54.prop.long$time<-as.numeric(p54.prop.long$time)/100
+dim (p54.prop.long)
+p54.prop<-p54.prop.long[ 1:600,]
+p54.prop$std<-p54.prop.long[601:1200,4]
+
+```
+
+
+```{r}
+#combine data for PA01 and PA1054, propionic acid
+p54.prop$strain <- "PA1054"
+#regenerate prop dataframe without phrev
+prop<-pao1.prop.long[ 1:560,]
+prop$std<-pao1.prop.long[561:1120,4]
+prop$strain <- "PA01"
+pro.strains2 <- rbind(prop, p54.prop)
+
+#Plot the data overlay
+
+p.pro.overlay <- ggplot(pro.strains2, aes(x=time, y=growth.fx, color = strain)) + 
+  
+  geom_ribbon (aes(ymin = growth.fx - std, ymax = growth.fx + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+pro.strains2$phrev <- factor(pro.strains2$ph, levels=rev(levels(factor(pro.strains2$ph))))
+
+P.both <- p.pro.overlay + facet_grid(pro.strains2$phrev ~ pro.strains2$mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Propionate", y = "normalized growth function", x = "time (h)") 
+
+P.both
+```
+
+```{r}
+#combine plots for PA01 and PA1054, propionic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+
+
+P.both.simple <- p.pro.overlay + coord_cartesian(xlim = c(1.25,25), ylim = c(-2.5,8)) +
+  facet_grid(pro.strains2$phrev ~ pro.strains2$mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text = element_blank(),  legend.position = "none") + 
+  labs (title = "Propionic", y = "", x = "time (h)") 
+  
+
+P.both.simple
+```
+
+
+##Figure 1
+```{r lund-sum-plot-overlay, fig.height=11, fig.width=8}
+#Lay out the graphs all in one figure
+grid.arrange(A.both.simple, Be.both, Bu.both.simple, C.both.simple, M.both.simple, S.both.simple,  P.both.simple, ncol = 2, top = "Acid concentration (mM)", right = "pH")
+
+```
+
+#Are the differences observed in growth between strains and/or between conditions significant?
+
+Looking at the phenom growth function estimate curves, we observed that some acids are stronger than others - acetic, butyric, propionic are stronger in combo with pH than sorbic, citric, malic, benzoic. This difference looks largest at 5-20mM acid and pH 5-6. Is this statistically significant? PA1054 also appears to grow better across conditions when pH is near neutral than PA01. Is this significant?
+
+##Import carrying capacity growth rate data for each condition
+```{r}
+
+cc.ace.01<-read.csv (file = "PA01-acetic/carrycap.csv")
+cc.but.01<-read.csv (file = "PA01-butyric/carrycap.csv")
+cc.pro.01<-read.csv (file = "PA01-propionic/carrycap.csv")
+cc.sor.01<-read.csv (file = "PA01-potassium-sorbate/carrycap.csv")
+cc.cit.01<-read.csv (file = "PA01-citric/carrycap.csv")
+cc.mal.01<-read.csv (file = "PA01-malic/carrycap.csv")
+cc.ben.01<-read.csv (file = "PA01-benzoate/carrycap.csv")
+  
+cc.ace.1054<-read.csv (file = "PA1054-acetic/carrycap.csv")
+cc.but.1054<-read.csv (file = "PA1054-butyric/carrycap.csv")
+cc.pro.1054<-read.csv (file = "PA1054-propionic/carrycap.csv")
+cc.sor.1054<-read.csv (file = "PA1054-potassium-sorbate/carrycap.csv")
+cc.cit.1054<-read.csv (file = "PA1054-citric/carrycap.csv")
+cc.mal.1054<-read.csv (file = "PA1054-malic/carrycap.csv")
+cc.ben.1054<-read.csv (file = "PA1054-sodium-benzoate/carrycap.csv")
+
+```
+
+##Combine cc numbers into a data frame and add columns specifying condition and strain.
+```{r}
+
+cc.ace.01$condition <- "acetic"
+cc.but.01$condition <- "butyric"
+cc.pro.01$condition <- "propionic"
+cc.sor.01$condition <- "sorbic"
+cc.cit.01$condition <- "citric"
+cc.mal.01$condition <- "malic"
+cc.ben.01$condition <- "benzoic"
+
+cc.ace.1054$condition <- "acetic"
+cc.but.1054$condition <- "butyric"
+cc.pro.1054$condition <- "propionic"
+cc.sor.1054$condition <- "sorbic"
+cc.cit.1054$condition <- "citric"
+cc.mal.1054$condition <- "malic"
+cc.ben.1054$condition <- "benzoic"
+
+cc.01 <- rbind(cc.ace.01, cc.but.01, cc.pro.01, cc.sor.01, cc.cit.01, cc.mal.01, cc.ben.01)
+cc.1054 <- rbind(cc.ace.1054, cc.but.1054, cc.pro.1054, cc.sor.1054, cc.cit.1054, cc.mal.1054, cc.ben.1054)
+
+cc.01$strain<-"PA01"
+cc.1054$strain<-"PA1054"
+
+cc <- rbind (cc.01, cc.1054)
+cc <- cc[ ,-1]
+```
+##Plot and run statistics
+
+
+###Are some acid + pH combinations stronger at killing (acetic, butyric, propionic) than others (malic, sorbic, citric, benzoic), regardless of strain?
+```{r}
+#Denote which acids are "strong" and which are "weak"
+cc$strength <- ifelse(cc$condition == "acetic", "strong", 
+                      ifelse(cc$condition == "butyric", "strong",
+                             ifelse(cc$condition == "propionic", "strong",
+                                    ifelse(cc$condition == "sorbic", "weak",
+                                           ifelse (cc$condition == "citric", "weak",
+                                                   ifelse (cc$condition == "malic", "weak",
+                                                           ifelse (cc$condition == "benzoic", "weak", NA)))))))
+```
+
+```{r}
+#Plot and test signficance
+
+t.test (subset (cc$mean, cc$strength == "strong"), subset (cc$mean, cc$strength == "weak"))
+
+###YES. "weaker" acid +pH combinations allow significantly higher carrying capacities than "stronger" acids, regardless of concentration.
+```
+
+
+###Are some acid + pH combinations stronger at killing across strains at the highest concentrations of acid + lowest pH (acid 5-20 mM, pH5-6)?
+```{r}
+#subset the data
+cc.kill <- subset (cc, mMacid >= 5 & ph <= 6)
+
+#test for significance
+t.test (subset (cc.kill$mean, cc.kill$strength == "strong"), subset (cc.kill$mean, cc.kill$strength == "weak"))
+
+###YES. The difference is even more pronounced at the higher concentrations of acid + lower pH. This p-value is reported in the text of the manuscript.
+```
+
+###Figure 3D shows this difference in "strong" vs "weak" in density plots. 
+```{r}
+#conditions, differences in distributions of cc, grouped by strength, subset of highest acid concentrations and lowest pH (i.e. combinations of conditions)
+ggplot (cc.kill, (aes (mean, fill = strength, colour = strength))) +
+  geom_density(alpha = 0.3) +
+  xlim (-3, 10) +
+scale_fill_manual(values = c("cyan", "black")) +
+  scale_color_manual(values = c("cyan", "black")) +
+  theme_classic(base_size = 20) +
+  geom_rug(alpha = 0.6)
+  
+
+```
+
+###What is the difference in growth behavior of strains in neutral pH + low acid?
+
+```{r}
+cc.grow<-subset (cc, mMacid == 0 & ph >= 6.5)
+t.test (subset (cc.grow$mean, cc.grow$strain == "PA01"), subset (cc.grow$mean, cc.grow$strain == "PA1054"))
+#PA1054 grows significantly better than PA01 under conditions that allow for growth. This p-value is reported in the main manuscript text.
+```
+###Figure 3E
+```{r}
+#strains at growth concentrations
+ggplot (cc.grow, (aes (mean, fill = strain, colour = strain))) +
+  geom_density(alpha = 0.2) +
+
+  scale_fill_manual(values = c("black", "magenta")) +
+  scale_color_manual(values = c("black", "magenta")) + 
+  theme_classic(base_size = 20) +
+  geom_rug (alpha = 0.5) +
+  xlim(c(5,7))
+
+
+```
+
+###Are the strains significantly different at the highest concentrations of acid + lowest pH (acid 5-20 mM, pH5-6)?
+```{r}
+
+t.test (subset (cc.kill$mean, cc.kill$strain == "PA01"), subset (cc.kill$mean, cc.kill$strain == "PA1054"))
+
+###No. Strains are not significantly different when high acid + low pH are used in combo. 
+```
+###Figure 3F
+```{r, width = 2.3, height = 0.2}
+#strains at killing concentrations
+ggplot (cc.kill, (aes (mean, fill = strain, colour = strain))) +
+  geom_density(alpha = 0.2) +
+  xlim (-3, 10) +
+  scale_fill_manual(values = c("black", "magenta")) +
+  scale_color_manual(values = c("black", "magenta")) + 
+  theme_classic(base_size = 20) +
+  geom_rug (alpha = 0.5)
+
+
+```
+
+###What is the difference between growth behavior of strains in weak vs strong pH+acid combos?
+```{r}
+pa01.strong<-subset (cc.kill$mean, cc.kill$strain == "PA01" & cc.kill$strength == "strong")
+pa1054.strong<-subset (cc.kill$mean, cc.kill$strain == "PA1054" & cc.kill$strength == "strong")
+pa01.weak<-subset (cc.kill$mean, cc.kill$strain == "PA01" & cc.kill$strength == "weak")
+pa1054.weak<-subset (cc.kill$mean, cc.kill$strain == "PA1054" & cc.kill$strength == "weak")
+
+t.test (pa01.strong, pa1054.strong)
+t.test(pa01.weak, pa1054.weak)
+
+#These p-values are reported in the main text of the manuscript.
+```
+
+
+###Figure 3A, heatmap showing that carrying capacity is an informative summary metric
+```{r}
+#cc.unite <- tidyr:::unite(cc, col = "ph_acid", ph, mMacid, remove = FALSE)
+ggplot(cc, aes(as.factor(mMacid), ph, fill = mean)) + 
+  geom_tile() +
+  facet_grid(condition ~ strain) +
+  scale_fill_gradient(low = "cyan", high = "black", limits = c(-0.5, 8)) +
+  theme_classic(base_size = 20) +
+  labs (x = "acid concentration (mM)", y = "pH")
+```
+
+### Check to make sure that the groupings "strong" and "weak" are quantitatively correct
+```{r}
+#find the mean of each acid across high acid and low ph ("cc.kill")
+cc.mean<-ddply(cc.kill, c("condition"), summarise, mean.by.cond = mean(mean), sd.by.cond = sd(mean), number.observations = length (mean), sem = (sd(mean))/sqrt(number.observations))
+
+#rank order by condition 
+#cc.mean.order <- order(cc.mean$mean.by.cond)
+#cc.mean$mean.by.cond[cc.mean.order]
+cc.mean <- cc.mean[ order(cc.mean$mean.by.cond),]
+
+```
+###Figure 3B. Rank-ordered plot. Looks like categorization of "strong" and "weak" is appropriate
+```{r}
+#barplot of mean across conditions and across strains - which acid has strongest effect on cc?
+ggplot(cc.mean, aes(x = reorder (condition, -mean.by.cond), y = mean.by.cond, fill = mean.by.cond)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  theme_classic(base_size = 20) +
+  scale_fill_gradient(low = "cyan", high = "black", limits = c(-0.5, 8)) +
+  labs(colour = "mean", x = "condition", y = "mean carrying capacity")
+```
+
+###How to group "strong" vs "weak"? Take difference between mean cc's for each acid - where is the break the largest?
+```{r}
+
+cc.mean$diffs.2minus1.etc<-c(NA, cc.mean[2, 2] - cc.mean[1,2],
+cc.mean[3, 2] - cc.mean[2, 2],
+cc.mean[4,2 ] - cc.mean[3, 2],
+cc.mean[5,2] - cc.mean[ 4,2],
+cc.mean[6,2 ]-cc.mean[5,2],
+cc.mean[7,2]-cc.mean[6,2])
+
+#Largest difference is between acetic and citric. Therefore: prop, butyric, acetic are "strong", rest are "weak" OAs. 
+```
+
+###Figure 3C. Heatmap summarizing results of "strong" vs "weak" OA types in growth limiting conditions.
+```{r}
+ggplot(cc.kill, aes(as.factor(mMacid), ph, fill = mean)) + 
+  geom_tile() +
+  facet_grid(strength ~ strain) +
+  scale_fill_gradient(low = "cyan", high = "black", limits = c(-0.5, 8)) +
+  theme_classic(base_size = 20) +
+  labs (x = "acid concentration (mM)", y = "pH")
+```
+
+
+#Examine how cc correlates between the logistic model output and phenom model output.
+
+##Import the logistic cc's
+```{r}
+
+cc.logt.ace.01<-read.csv (file = "Logistic/PA01-acetic/estimates_PA01-acetic.csv")
+cc.logt.but.01<-read.csv (file = "Logistic/PA01-butyric/estimates_PA01-butyric.csv")
+cc.logt.pro.01<-read.csv (file = "Logistic/PA01-propionic/estimates_PA01-propionic.csv")
+cc.logt.sor.01<-read.csv (file = "Logistic/PA01-potassium-sorbate/estimates_PA01-potassium-sorbate.csv")
+cc.logt.cit.01<-read.csv (file = "Logistic/PA01-citric/estimates_PA01-citric.csv")
+cc.logt.mal.01<-read.csv (file = "Logistic/PA01-malic/estimates_PA01-malic.csv")
+cc.logt.ben.01<-read.csv (file = "Logistic/PA01-benzoate/estimates_PA01-benzoate.csv")
+  
+cc.logt.ace.1054<-read.csv (file = "Logistic/PA1054-acetic/estimates_PA1054-acetic.csv")
+cc.logt.but.1054<-read.csv (file = "Logistic/PA1054-butyric/estimates_PA1054-butyric.csv")
+cc.logt.pro.1054<-read.csv (file = "Logistic/PA1054-propionic/estimates_PA1054-propionic.csv")
+cc.logt.sor.1054<-read.csv (file = "Logistic/PA1054-potassium-sorbate/estimates_PA1054-potassium-sorbate.csv")
+cc.logt.cit.1054<-read.csv (file = "Logistic/PA1054-citric/estimates_PA1054-citric.csv")
+cc.logt.mal.1054<-read.csv (file = "Logistic/PA1054-malic/estimates_PA1054-malic.csv")
+cc.logt.ben.1054<-read.csv (file = "Logistic/PA1054-sodium-benzoate/estimates_PA1054-sodium benzoate.csv")
+
+```
+
+##Combine cc numbers into a data frame and add columns specifying condition and strain.
+```{r}
+
+cc.logt.ace.01$condition <- "acetic"
+cc.logt.but.01$condition <- "butyric"
+cc.logt.pro.01$condition <- "propionic"
+cc.logt.sor.01$condition <- "sorbic"
+cc.logt.cit.01$condition <- "citric"
+cc.logt.mal.01$condition <- "malic"
+cc.logt.ben.01$condition <- "benzoic"
+
+cc.logt.ace.1054$condition <- "acetic"
+cc.logt.but.1054$condition <- "butyric"
+cc.logt.pro.1054$condition <- "propionic"
+cc.logt.sor.1054$condition <- "sorbic"
+cc.logt.cit.1054$condition <- "citric"
+cc.logt.mal.1054$condition <- "malic"
+cc.logt.ben.1054$condition <- "benzoic"
+
+cc.logt.01 <- rbind(cc.logt.ace.01, cc.logt.but.01, cc.logt.pro.01, cc.logt.sor.01, cc.logt.cit.01, cc.logt.mal.01, cc.logt.ben.01)
+cc.logt.1054 <- rbind(cc.logt.ace.1054, cc.logt.but.1054, cc.logt.pro.1054, cc.logt.sor.1054, cc.logt.cit.1054, cc.logt.mal.1054, cc.logt.ben.1054)
+
+cc.logt.01$strain<-"PA01"
+cc.logt.1054$strain<-"PA1054"
+
+cc.logt <- rbind (cc.logt.01, cc.logt.1054)
+#cc.logt <- cc[ ,-1]
+```
+
+##Figure 1A. Correlate carrying capacities between the two models and plot.
+```{r}
+#plot (cc.logt$logged.scaled.carrying.capacity..log2.K.IC., cc$mean, pch = 21)
+smoothScatter(cc.logt$logged.scaled.carrying.capacity..log2.K.IC., cc$mean, pch = 21, col = "dark blue", xlab = "logistic", ylab= "phenom", cex.lab = 1.5, cex.axis=1.5)
+#smoothScatter produces a smoothed color density representation of a scatterplot, obtained through a (2D) kernel density estimate.
+
+abline (lm (cc.logt$logged.scaled.carrying.capacity..log2.K.IC. ~ cc$mean), col = "cyan" )
+cor(cc.logt$logged.scaled.carrying.capacity..log2.K.IC., cc$mean, use = "pairwise.complete.obs", method = "spearman")
+
+cor.test(cc.logt$logged.scaled.carrying.capacity..log2.K.IC., cc$mean, use = "pairwise.complete.obs", method = "spearman")
+
+#Significant correlation is observed. P-value result of cor.test reported in main text.
+```
+
+##Figure 1B. 
+Outliers observed for logistic model carrying capacity estimates at growth liming conditions. Therefore examined logistic model errors. Correlation of logistic carrying capacities with those from phenom is driven by low logistic model errors for those conditions that allow good growth.
+```{r}
+ggplot (cc.logt, (aes (x = as.factor(cc.logt$pH), y = cc.logt$error..L2.norm.))) +
+  geom_point () +
+  stat_summary(fun.data=mean_sdl, geom="pointrange", color="cyan") +
+  geom_jitter(shape=16, position=position_jitter(0.2)) +
+  theme_classic(base_size = 20) +
+  labs(x = "pH", y = "error")
+
+#as expected, logistic fits are best under conditions that allow growth
+```
+
+###Figure 1C.
+```{r}
+ggplot (cc.logt, (aes (x = as.factor(cc.logt$conc), y = cc.logt$error..L2.norm.))) +
+  geom_point () +
+  stat_summary(fun.data=mean_sdl, geom="pointrange", color="cyan") +
+  geom_jitter(shape=16, position=position_jitter(0.2)) +
+  theme_classic(base_size = 20) +
+  labs(x = "acid concentration (mM)", y = "error")
+
+#as expected, logistic fits are best under conditions that allow growth
+```
+
+
+#Examination of interaction term from phenom. 
+
+Looks like PA1054 generally has a higher cc, but both are nearly equally killed (when cc is low, distribution appears equally low across strains). Let's test this further by examining the interaction term from phenom. Interaction term shows the difference between the combination of acid + pH vs. each of these conditions alone, here called "rel" for "relative difference", enabled with phenom modling of combinatorial conditions. Alternative hypothesis is that "rel" should be lower / stronger for PA1054 than for PA01.
+
+###Import the data and put in long format for line plotting
+```{r}
+#import the rel data, PA01 acetic
+ac.rel.01<-read.csv (file = "PA01-acetic/function-rel.csv")
+
+#reshape data for line plotting
+ac.rel.01.long<-gather(ac.rel.01, time, rel.diff, -ph, -mMacid)
+ac.rel.01.long<-ac.rel.01.long[!(ac.rel.01.long$time=="X"),]
+
+ac.rel.01.long$time<-gsub("[stdEf.]", "", ac.rel.01.long$time)
+ac.rel.01.long$time<-as.numeric(ac.rel.01.long$time)/100
+dim (ac.rel.01.long)
+acrel1<-ac.rel.01.long[ 1:372,]
+acrel1$std<-ac.rel.01.long[373:744,4]
+```
+
+```{r}
+#import the rel data, PA01 benzoic
+be.rel.01<-read.csv (file = "PA01-benzoate/function-rel.csv")
+
+#reshape data for line plotting
+be.rel.01.long<-gather(be.rel.01, time,rel.diff, -ph, -mMacid)
+be.rel.01.long<-be.rel.01.long[!(be.rel.01.long$time=="X"),]
+
+be.rel.01.long$time<-gsub("[stdEf.]", "", be.rel.01.long$time)
+be.rel.01.long$time<-as.numeric(be.rel.01.long$time)/100
+dim (be.rel.01.long)
+berel1<-be.rel.01.long[ 1:360, ]
+berel1$std<-be.rel.01.long[361:720,4]
+```
+```{r}
+#import the rel data, PA01 butyric
+bu.rel.01<-read.csv (file = "PA01-butyric/function-rel.csv")
+
+#reshape data for line plotting
+bu.rel.01.long<-gather(bu.rel.01, time, rel.diff, -ph, -mMacid)
+bu.rel.01.long<-bu.rel.01.long[!(bu.rel.01.long$time=="X"),]
+
+bu.rel.01.long$time<-gsub("[stdEf.]", "", bu.rel.01.long$time)
+bu.rel.01.long$time<-as.numeric(bu.rel.01.long$time)/100
+dim (bu.rel.01.long)
+burel1<-bu.rel.01.long[ 1:360, ]
+burel1$std<-bu.rel.01.long[361:720,4]
+```
+
+```{r}
+#import the rel data, PA01 citric
+ci.rel.01<-read.csv (file = "PA01-citric/function-rel.csv")
+
+#reshape data for line plotting
+ci.rel.01.long<-gather(ci.rel.01, time, rel.diff, -ph, -mMacid)
+ci.rel.01.long<-ci.rel.01.long[!(ci.rel.01.long$time=="X"),]
+
+ci.rel.01.long$time<-gsub("[stdEf.]", "", ci.rel.01.long$time)
+ci.rel.01.long$time<-as.numeric(ci.rel.01.long$time)/100
+dim (ci.rel.01.long)
+cirel1<-ci.rel.01.long[ 1:372, ]
+cirel1$std<-ci.rel.01.long[373:744,4]
+```
+
+
+```{r}
+#import the rel data, PA01 malic
+ma.rel.01<-read.csv (file = "PA01-malic/function-rel.csv")
+
+#reshape data for line plotting
+ma.rel.01.long<-gather(ma.rel.01, time, rel.diff, -ph, -mMacid)
+ma.rel.01.long<-ma.rel.01.long[!(ma.rel.01.long$time=="X"),]
+
+ma.rel.01.long$time<-gsub("[stdEf.]", "", ma.rel.01.long$time)
+ma.rel.01.long$time<-as.numeric(ma.rel.01.long$time)/100
+dim (ma.rel.01.long)
+marel1<-ma.rel.01.long[ 1:372, ]
+marel1$std<-ma.rel.01.long[373:744,4]
+```
+
+```{r}
+#import the rel data, PA01 sorbic
+so.rel.01<-read.csv (file = "PA01-potassium-sorbate/function-rel.csv")
+
+#reshape data for line plotting
+so.rel.01.long<-gather(so.rel.01, time, rel.diff, -ph, -mMacid)
+so.rel.01.long<-so.rel.01.long[!(so.rel.01.long$time=="X"),]
+
+so.rel.01.long$time<-gsub("[stdEf.]", "", so.rel.01.long$time)
+so.rel.01.long$time<-as.numeric(so.rel.01.long$time)/100
+dim (so.rel.01.long)
+sorel1<-so.rel.01.long[ 1:288, ]
+sorel1$std<-so.rel.01.long[289:576,4]
+```
+
+```{r}
+#import the rel data, PA01 propionic
+pr.rel.01<-read.csv (file = "PA01-propionic/function-rel.csv")
+
+#reshape data for line plotting
+pr.rel.01.long<-gather(pr.rel.01, time, rel.diff, -ph, -mMacid)
+pr.rel.01.long<-pr.rel.01.long[!(pr.rel.01.long$time=="X"),]
+
+pr.rel.01.long$time<-gsub("[stdEf.]", "", pr.rel.01.long$time)
+pr.rel.01.long$time<-as.numeric(pr.rel.01.long$time)/100
+dim (pr.rel.01.long)
+prrel1<-pr.rel.01.long[ 1:336, ]
+prrel1$std<-pr.rel.01.long[337:672,4]
+```
+
+```{r}
+#import the rel data, PA1054 acetic
+ac.rel.54<-read.csv (file = "PA1054-acetic/function-rel.csv")
+
+#reshape data for line plotting
+ac.rel.54.long<-gather(ac.rel.54, time, rel.diff, -ph, -mMacid)
+ac.rel.54.long<-ac.rel.54.long[!(ac.rel.54.long$time=="X"),]
+
+ac.rel.54.long$time<-gsub("[stdEf.]", "", ac.rel.54.long$time)
+ac.rel.54.long$time<-as.numeric(ac.rel.54.long$time)/100
+dim (ac.rel.54.long)
+acrel54<-ac.rel.54.long[ 1:372,]
+acrel54$std<-ac.rel.54.long[373:744,4]
+```
+
+```{r}
+#import the rel data, PA54 benzoic
+be.rel.54<-read.csv (file = "PA1054-sodium-benzoate/function-rel.csv")
+
+#reshape data for line plotting
+be.rel.54.long<-gather(be.rel.54, time,rel.diff, -ph, -mMacid)
+be.rel.54.long<-be.rel.54.long[!(be.rel.54.long$time=="X"),]
+
+be.rel.54.long$time<-gsub("[stdEf.]", "", be.rel.54.long$time)
+be.rel.54.long$time<-as.numeric(be.rel.54.long$time)/100
+dim (be.rel.54.long)
+berel54<-be.rel.54.long[ 1:372, ]
+berel54$std<-be.rel.54.long[373:744,4]
+```
+
+```{r}
+#import the rel data, PA1054 butyric
+bu.rel.54<-read.csv (file = "PA1054-butyric/function-rel.csv")
+
+#reshape data for line plotting
+bu.rel.54.long<-gather(bu.rel.54, time, rel.diff, -ph, -mMacid)
+bu.rel.54.long<-bu.rel.54.long[!(bu.rel.54.long$time=="X"),]
+
+bu.rel.54.long$time<-gsub("[stdEf.]", "", bu.rel.54.long$time)
+bu.rel.54.long$time<-as.numeric(bu.rel.54.long$time)/100
+dim (bu.rel.54.long)
+burel54<-bu.rel.54.long[ 1:348, ]
+burel54$std<-bu.rel.54.long[349:696,4]
+```
+
+```{r}
+#import the rel data, PA1054 citric
+ci.rel.54<-read.csv (file = "PA1054-citric/function-rel.csv")
+
+#reshape data for line plotting
+ci.rel.54.long<-gather(ci.rel.54, time, rel.diff, -ph, -mMacid)
+ci.rel.54.long<-ci.rel.54.long[!(ci.rel.54.long$time=="X"),]
+
+ci.rel.54.long$time<-gsub("[stdEf.]", "", ci.rel.54.long$time)
+ci.rel.54.long$time<-as.numeric(ci.rel.54.long$time)/100
+dim (ci.rel.54.long)
+cirel54<-ci.rel.54.long[ 1:372, ]
+cirel54$std<-ci.rel.54.long[373:744,4]
+```
+
+
+```{r}
+#import the rel data, PA1054 malic
+ma.rel.54<-read.csv (file = "PA1054-malic/function-rel.csv")
+
+#reshape data for line plotting
+ma.rel.54.long<-gather(ma.rel.54, time, rel.diff, -ph, -mMacid)
+ma.rel.54.long<-ma.rel.54.long[!(ma.rel.54.long$time=="X"),]
+
+ma.rel.54.long$time<-gsub("[stdEf.]", "", ma.rel.54.long$time)
+ma.rel.54.long$time<-as.numeric(ma.rel.54.long$time)/100
+dim (ma.rel.54.long)
+marel54<-ma.rel.54.long[ 1:372, ]
+marel54$std<-ma.rel.54.long[373:744,4]
+```
+
+```{r}
+#import the rel data, PA1054 sorbic
+so.rel.54<-read.csv (file = "PA1054-potassium-sorbate/function-rel.csv")
+
+#reshape data for line plotting
+so.rel.54.long<-gather(so.rel.54, time, rel.diff, -ph, -mMacid)
+so.rel.54.long<-so.rel.54.long[!(so.rel.54.long$time=="X"),]
+
+so.rel.54.long$time<-gsub("[stdEf.]", "", so.rel.54.long$time)
+so.rel.54.long$time<-as.numeric(so.rel.54.long$time)/100
+dim (so.rel.54.long)
+sorel54<-so.rel.54.long[ 1:372, ]
+sorel54$std<-so.rel.54.long[373:744,4]
+```
+
+```{r}
+#import the rel data, PA1054 propionic
+pr.rel.54<-read.csv (file = "PA1054-propionic/function-rel.csv")
+
+#reshape data for line plotting
+pr.rel.54.long<-gather(pr.rel.54, time, rel.diff, -ph, -mMacid)
+pr.rel.54.long<-pr.rel.54.long[!(pr.rel.54.long$time=="X"),]
+
+pr.rel.54.long$time<-gsub("[stdEf.]", "", pr.rel.54.long$time)
+pr.rel.54.long$time<-as.numeric(pr.rel.54.long$time)/100
+dim (pr.rel.54.long)
+prrel54<-pr.rel.54.long[ 1:360, ]
+prrel54$std<-pr.rel.54.long[361:720,4]
+```
+
+###Line plots of rel, PA01 vs PA1054
+```{r}
+#combine data for PA01 and PA1054, acetic acid, rel
+acrel1$strain <- "PA01"
+acrel54$strain <- "PA1054"
+acrel154 <- rbind(acrel1, acrel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+rel.overlay <- ggplot(acrel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+acrel154$phrev <- factor(acrel154$ph, levels=rev(levels(factor(acrel154$ph))))
+
+A.rel <- rel.overlay + facet_grid(acrel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Acetic", y = "relative difference", x = "time (h)") 
+
+
+
+A.rel
+```
+
+
+```{r}
+#combine plots for PA01 and PA1054, acetic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+acrel154.loph <- subset(acrel154, ph <= 6)
+
+acrel154.loph$phrev <- factor(acrel154.loph$ph, levels=rev(levels(factor(acrel154.loph$ph))))
+
+rel.overlay.loph <- ggplot(acrel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+ac.simple <- rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(acrel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text.y = element_blank(), legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank()) + 
+  labs (title = "Acetic", y = "", x = "") 
+  
+
+ac.simple
+
+```
+
+
+```{r}
+#combine data for PA01 and PA1054, benzoic acid, rel
+berel1$strain <- "PA01"
+berel54$strain <- "PA1054"
+berel154 <- rbind(berel1, berel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+be.rel.overlay <- ggplot(berel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+berel154$phrev <- factor(berel154$ph, levels=rev(levels(factor(berel154$ph))))
+
+Be.rel <- be.rel.overlay + facet_grid(berel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Benzoic", y = "relative difference", x = "time (h)") 
+
+
+
+Be.rel
+```
+
+
+```{r}
+#combine plots for PA01 and PA1054, benzoic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+berel154.loph <- subset(berel154, ph <= 6)
+
+berel154.loph$phrev <- factor(berel154.loph$ph, levels=rev(levels(factor(berel154.loph$ph))))
+
+be.rel.overlay.loph <- ggplot(berel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+be.simple <- be.rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(berel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"),  legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank()) + 
+  labs (title = "Benzoic", y = "", x = "") 
+  
+
+be.simple
+
+```
+
+```{r}
+#combine data for PA01 and PA1054, butyric acid, rel
+burel1$strain <- "PA01"
+burel54$strain <- "PA1054"
+burel154 <- rbind(burel1, burel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+bu.rel.overlay <- ggplot(burel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+burel154$phrev <- factor(burel154$ph, levels=rev(levels(factor(burel154$ph))))
+
+Bu.rel <- bu.rel.overlay + facet_grid(burel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Butyric", y = "relative difference", x = "time (h)") 
+
+
+
+Bu.rel
+```
+
+
+```{r}
+#combine plots for PA01 and PA1054, butyric acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+burel154.loph <- subset(burel154, ph <= 6)
+
+burel154.loph$phrev <- factor(burel154.loph$ph, levels=rev(levels(factor(burel154.loph$ph))))
+
+bu.rel.overlay.loph <- ggplot(burel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+bu.simple <- bu.rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(burel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank()) + 
+  labs (title = "Butyric", y = "", x = "") 
+  
+
+bu.simple
+
+```
+
+```{r}
+#combine data for PA01 and PA1054, citric acid, rel
+cirel1$strain <- "PA01"
+cirel54$strain <- "PA1054"
+cirel154 <- rbind(cirel1, cirel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+ci.rel.overlay <- ggplot(cirel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+cirel154$phrev <- factor(cirel154$ph, levels=rev(levels(factor(cirel154$ph))))
+
+Ci.rel <- ci.rel.overlay + facet_grid(cirel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Citric", y = "relative difference", x = "time (h)") 
+
+
+
+Ci.rel
+```
+
+
+```{r}
+#combine plots for PA01 and PA1054, citric acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+cirel154.loph <- subset(cirel154, ph <= 6)
+
+cirel154.loph$phrev <- factor(cirel154.loph$ph, levels=rev(levels(factor(cirel154.loph$ph))))
+
+ci.rel.overlay.loph <- ggplot(cirel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+ci.simple <- ci.rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(cirel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank()) + 
+  labs (title = "Citric", y = "", x = "") 
+  
+
+ci.simple
+
+```
+
+
+
+
+```{r}
+#combine data for PA01 and PA1054, sorbic acid, rel
+sorel1$strain <- "PA01"
+sorel54$strain <- "PA1054"
+sorel154 <- rbind(sorel1, sorel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+so.rel.overlay <- ggplot(sorel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+sorel154$phrev <- factor(sorel154$ph, levels=rev(levels(factor(sorel154$ph))))
+
+so.rel <- so.rel.overlay + facet_grid(sorel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Sorbic", y = "relative difference", x = "time (h)") 
+
+
+
+so.rel
+```
+
+```{r}
+#combine plots for PA01 and PA1054, sorbic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+sorel154.loph <- subset(sorel154, ph <= 6)
+
+sorel154.loph$phrev <- factor(sorel154.loph$ph, levels=rev(levels(factor(sorel154.loph$ph))))
+
+so.rel.overlay.loph <- ggplot(sorel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+so.simple <- so.rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(sorel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none") + 
+  labs (title = "Sorbic", y = "", x = "time (h)") 
+  
+
+so.simple
+
+```
+
+```{r}
+#combine data for PA01 and PA1054, malic acid, rel
+marel1$strain <- "PA01"
+marel54$strain <- "PA1054"
+marel154 <- rbind(marel1, marel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+ma.rel.overlay <- ggplot(marel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+marel154$phrev <- factor(marel154$ph, levels=rev(levels(factor(marel154$ph))))
+
+ma.rel <- ma.rel.overlay + facet_grid(marel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Malic", y = "relative difference", x = "time (h)") 
+
+
+
+ma.rel
+```
+
+
+```{r}
+#combine plots for PA01 and PA1054, malic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+marel154.loph <- subset(marel154, ph <= 6)
+
+marel154.loph$phrev <- factor(marel154.loph$ph, levels=rev(levels(factor(marel154.loph$ph))))
+
+ma.rel.overlay.loph <- ggplot(marel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+ma.simple <- ma.rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(marel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), strip.text = element_blank(), legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank()) + 
+  labs (title = "Malic", y = "", x = "") 
+  
+
+ma.simple
+
+```
+
+```{r}
+#combine data for PA01 and PA1054, propionic acid, rel
+prrel1$strain <- "PA01"
+prrel54$strain <- "PA1054"
+prrel154 <- rbind(prrel1, prrel54)
+
+
+#Plot the data overlay
+
+cutoff <- data.frame(yintercept=0, cutoff=factor(0))
+
+pr.rel.overlay <- ggplot(prrel154, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_hline(aes(yintercept = 0), color = "grey60") + 
+  geom_line(alpha = 1, size = 0.5) +
+  scale_colour_manual(values = c("black", "magenta")) 
+  
+prrel154$phrev <- factor(prrel154$ph, levels=rev(levels(factor(prrel154$ph))))
+
+pr.rel <- pr.rel.overlay + facet_grid(prrel154$phrev ~ mMacid) + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank()) + labs (title = "Propionic", y = "relative difference", x = "time (h)") 
+
+
+
+pr.rel
+```
+
+```{r}
+#combine plots for PA01 and PA1054, propionic acid, simpler plot with no axis or facet labels (for composite figure with all acids together)
+prrel154.loph <- subset(prrel154, ph <= 6)
+
+prrel154.loph$phrev <- factor(prrel154.loph$ph, levels=rev(levels(factor(prrel154.loph$ph))))
+
+pr.rel.overlay.loph <- ggplot(prrel154.loph, aes(x=time, y=rel.diff, color = strain)) + 
+  coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  geom_ribbon (aes(ymin = rel.diff - std, ymax = rel.diff + std), alpha = 0.03) +
+  geom_line(alpha = 1, size = 0.5) +
+  geom_hline(aes(yintercept = 0), color = "grey60") +
+  scale_colour_manual(values = c("black", "magenta")) 
+
+pr.simple <- pr.rel.overlay.loph + coord_cartesian(xlim = c(1.25,25), ylim = c(-11,1.8)) +
+  facet_grid(prrel154.loph$phrev ~ mMacid) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.line = element_line("black"), axis.text.y = element_blank(), axis.ticks.y = element_blank(), strip.text = element_blank(), legend.position = "none") + 
+  labs (title = "Propionic", y = "", x = "time (h)") 
+  
+
+pr.simple
+
+```
+
+###Figure 4
+```{r fig.height=11, fig.width=7}
+
+#Lay out the graphs all in one figure
+grid.arrange(ac.simple,be.simple,bu.simple,ci.simple,ma.simple,pr.simple,so.simple, top = "Acid concentration (mM)", right = "pH", left = "relative difference (interaction term)", ncol=2)
+
+```
+
+
+
+##Use relmin (minimum of phenom interaction term) as a "summary growth metric". 
+Which combos are most effective for which strain? 
+```{r}
+#Determine minimum rel value for each acid 
+relmin.ac.01<- cbind(ac.rel.01[ ,2:3], data.frame(apply (ac.rel.01[ ,-1],1,min)))
+colnames (relmin.ac.01)<-c("ph", "mMacid", "relmin")
+
+relmin.ac.54<- cbind(ac.rel.54[ ,2:3], data.frame(apply (ac.rel.54[ ,-1],1,min)))
+colnames (relmin.ac.54)<-c("ph", "mMacid", "relmin")
+
+relmin.be.01<- cbind(be.rel.01[ ,2:3], data.frame(apply (be.rel.01[ ,-1],1,min)))
+colnames (relmin.be.01)<-c("ph", "mMacid", "relmin")
+
+relmin.be.54<- cbind(be.rel.54[ ,2:3], data.frame(apply (be.rel.54[ ,-1],1,min)))
+colnames (relmin.be.54)<-c("ph", "mMacid", "relmin")
+
+relmin.bu.01<- cbind(bu.rel.01[ ,2:3], data.frame(apply (bu.rel.01[ ,-1],1,min)))
+colnames (relmin.bu.01)<-c("ph", "mMacid", "relmin")
+
+relmin.bu.54<- cbind(bu.rel.54[ ,2:3], data.frame(apply (bu.rel.54[ ,-1],1,min)))
+colnames (relmin.bu.54)<-c("ph", "mMacid", "relmin")
+
+relmin.ci.01<- cbind(ci.rel.01[ ,2:3], data.frame(apply (ci.rel.01[ ,-1],1,min)))
+colnames (relmin.ci.01)<-c("ph", "mMacid", "relmin")
+
+relmin.ci.54<- cbind(ci.rel.54[ ,2:3], data.frame(apply (ci.rel.54[ ,-1],1,min)))
+colnames (relmin.ci.54)<-c("ph", "mMacid", "relmin")
+
+relmin.ma.01<- cbind(ma.rel.01[ ,2:3], data.frame(apply (ma.rel.01[ ,-1],1,min)))
+colnames (relmin.ma.01)<-c("ph", "mMacid", "relmin")
+
+relmin.ma.54<- cbind(ma.rel.54[ ,2:3], data.frame(apply (ma.rel.54[ ,-1],1,min)))
+colnames (relmin.ma.54)<-c("ph", "mMacid", "relmin")
+
+relmin.pr.01<- cbind(pr.rel.01[ ,2:3], data.frame(apply (pr.rel.01[ ,-1],1,min)))
+colnames (relmin.pr.01)<-c("ph", "mMacid", "relmin")
+
+relmin.pr.54<- cbind(pr.rel.54[ ,2:3], data.frame(apply (pr.rel.54[ ,-1],1,min)))
+colnames (relmin.pr.54)<-c("ph", "mMacid", "relmin")
+
+relmin.so.01<- cbind(so.rel.01[ ,2:3], data.frame(apply (so.rel.01[ ,-1],1,min)))
+colnames (relmin.so.01)<-c("ph", "mMacid", "relmin")
+
+relmin.so.54<- cbind(so.rel.54[ ,2:3], data.frame(apply (so.rel.54[ ,-1],1,min)))
+colnames (relmin.so.54)<-c("ph", "mMacid", "relmin")
+
+
+```
+
+
+###Combine relmins into a data frame and add columns specifying condition and strain.
+```{r}
+
+relmin.ac.01$condition <- "acetic"
+relmin.bu.01$condition <- "butyric"
+relmin.pr.01$condition <- "propionic"
+relmin.so.01$condition <- "sorbic"
+relmin.ci.01$condition <- "citric"
+relmin.ma.01$condition <- "malic"
+relmin.be.01$condition <- "benzoic"
+
+relmin.ac.54$condition <- "acetic"
+relmin.bu.54$condition <- "butyric"
+relmin.pr.54$condition <- "propionic"
+relmin.so.54$condition <- "sorbic"
+relmin.ci.54$condition <- "citric"
+relmin.ma.54$condition <- "malic"
+relmin.be.54$condition <- "benzoic"
+
+relmin.01 <- rbind(relmin.ac.01, relmin.bu.01, relmin.pr.01, relmin.so.01, relmin.ci.01, relmin.ma.01, relmin.be.01)
+relmin.54 <- rbind(relmin.ac.54, relmin.bu.54, relmin.pr.54, relmin.so.54, relmin.ci.54, relmin.ma.54, relmin.be.54)
+
+relmin.01$strain<-"PA01"
+relmin.54$strain<-"PA1054"
+
+relmin <- rbind (relmin.01, relmin.54)
+#relmin <- relmin[ ,-1]
+```
+
+###Figure 5A. Relmin heatmap summary figure.
+```{r}
+ggplot(relmin, aes(as.factor(mMacid), ph, fill = relmin)) + 
+  geom_tile() +
+  facet_grid(condition ~ strain) +
+  scale_fill_gradient(low = "cyan", high = "black") +
+  theme_classic(base_size = 20) +
+  labs (x = "acid concentration (mM)", y = "pH")
+
+
+```
+
+### Check to make sure that the groupings "strong" and "weak" are quantitatively correct
+```{r}
+#find the mean of each acid across high acid and low ph ("relmin.kill")
+relmin.kill <- subset (relmin, mMacid >= 5 & ph <= 6)
+relmin.mean<-ddply(relmin.kill, c("condition"), summarise, mean.by.cond = mean(relmin), sd.by.cond = sd(relmin), number.observations = length (relmin), sem = (sd(relmin))/sqrt(number.observations))
+
+#rank order by condition 
+
+relmin.mean <- relmin.mean[ order(relmin.mean$mean.by.cond),]
+
+```
+
+###Figure 5D. Rank order acids by relmin strength
+```{r}
+#barplot of mean across conditions and across strains - which acid has strongest effect on rel?
+#find mean rel across strains and pH
+
+ggplot(relmin.mean, aes(x = reorder (condition, -mean.by.cond), y = mean.by.cond, fill = mean.by.cond)) +
+  geom_bar(stat = "identity") + 
+  coord_flip() +
+  theme_classic(base_size = 20) +
+  scale_fill_gradient(low = "cyan", high = "black") +
+  labs(colour = "mean", x = "condition", y = "mean relmin")  +
+
+geom_errorbar(aes(ymin=mean.by.cond-sem, ymax=mean.by.cond+sem), width=.2,
+                 position=position_dodge(.9))
+  
+```
+
+###Figure 5C. Density histograms comparing strains under "killing" conditions
+```{r}
+
+ggplot (relmin.kill, (aes (relmin, fill = strain, colour = strain))) +
+  geom_density(alpha = 0.2) +
+  xlim (-15, 4) +
+  scale_fill_manual(values = c("black", "magenta")) +
+  scale_color_manual(values = c("black", "magenta")) + 
+  theme_classic(base_size = 20) +
+  geom_rug (alpha = 0.5)
+```
+
+###Are strains significantly different according to relmin (regardless of strong / weak acid?)
+```{r}
+
+t.test (subset (relmin.kill$relmin, relmin.kill$strain == "PA01"), subset (relmin.kill$relmin, relmin.kill$strain == "PA1054"), paired = FALSE)
+
+#No. This p-value is reported in the main text.
+```
+
+####Are strains significantly different in propionic acid according to relmin?
+```{r}
+
+t.test (relmin.pr.01$relmin, relmin.pr.54$relmin)
+
+#No. 
+#This p-value is reported in the main text.
+```
+
+####Are strains significantly different in malic acid according to relmin?
+```{r}
+
+t.test (relmin.ma.01$relmin, relmin.ma.54$relmin)
+
+#No. 
+#This p-value is reported in the main text.
+```
+
+####Are strains significantly different in sorbic acid according to relmin?
+```{r}
+
+t.test (relmin.so.01$relmin, relmin.so.54$relmin)
+
+#No.
+#This p-value is reported in the main text.
+```
+
+
+### Rank order and calculate mean relmin to find top conditions for each strain.
+Ranking
+```{r}
+relmin.order <- relmin[ order(relmin$relmin),]
+relmin.01.order<-relmin.01[ order (relmin.01$relmin),]
+relmin.54.order<-relmin.54[order (relmin.54$relmin),]
+```
+
+Means
+```{r}
+relmin.mean.01<-ddply(subset(relmin.kill, strain == "PA01"), c("condition"), summarise, mean.by.cond = mean(relmin), sd.by.cond = sd(relmin), number.observations = length (relmin), sem = (sd(relmin))/sqrt(number.observations))
+
+#rank order by condition 
+
+relmin.mean.01 <- relmin.mean.01[ order(relmin.mean.01$mean.by.cond),]
+
+relmin.mean.54<-ddply(subset(relmin.kill, strain == "PA1054"), c("condition"), summarise, mean.by.cond = mean(relmin), sd.by.cond = sd(relmin), number.observations = length (relmin), sem = (sd(relmin))/sqrt(number.observations))
+
+#rank order by condition 
+
+relmin.mean.54<- relmin.mean.54[ order(relmin.mean.54$mean.by.cond),]
+
+relmin.mean.01$strain<-"PA01"
+relmin.mean.54$strain<- "PA1054"
+relmin.mean.strains<-rbind (relmin.mean.01, relmin.mean.54)
+```
+
+###Figure 5B. Barplot of relmin ordered in each strain
+Which acid has strongest effect on rel? How is each strain affected?
+```{r}
+
+ggplot(relmin.mean.strains, aes(x = reorder (condition, -mean.by.cond), y = mean.by.cond, fill = strain)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  coord_flip() +
+  theme_classic(base_size = 20) +
+  labs(colour = "mean", x = "condition", y = "mean relmin") + 
+  scale_fill_manual(values = c("grey", "magenta")) +
+  
+  geom_errorbar(aes(ymin=mean.by.cond-sem, ymax=mean.by.cond+sem), width=.2,
+                 position=position_dodge(.9))
+
+```
+
+###Is the effect of prop acid on PA01 and PA1054 significantly stronger than all the other acids according to relmin?
+```{r}
+
+prop.only<-subset(relmin, condition == "propionic")
+all.but.prop<-subset (relmin, condition == c("butyric","acetic","sorbic","citric", "malic", "benzoic"))
+t.test(prop.only$relmin, all.but.prop$relmin, var.equal = FALSE, paired = FALSE)
+
+#YES. This p-value is reported in the text.
+```
+#Write output files for supplementary tables
+
+```{r}
+#Supplementary Table 1 - logistic model estimate.
+write.table(cc.logt, file = "Table-ST1.txt", sep = "\t")
+
+#Supplementary Table 2 - phenom carrying capacity estimates
+write.table(cc, file = "Table-ST2.txt", sep = "\t")
+
+#Supplementary Table 3 - phenom growth curve estimates
+strains2$condition <- "acetic"
+benz.strains2$condition <- "benzoic"
+but.strains2$condition <- "butyric"
+cit.strains2$condition <- "citric"
+mal.strains2$condition <- "malic"
+pro.strains2$condition <- "propionic"
+sor.strains2$condition <- "sorbic"
+
+grow.fx<-rbind(strains2,benz.strains2,but.strains2,cit.strains2,mal.strains2,pro.strains2,sor.strains2)
+write.table(grow.fx, file = "Table-ST3.txt", sep = "\t")
+
+#Supplementary Table 4 - phenom interaction terms
+acrel154$condition <- "acetic"
+berel154$condition <- "benzoic"
+burel154$condition <- "butyric"
+cirel154$condition <- "citric"
+marel154$condition <- "malic"
+prrel154$condition <- "propionic"
+sorel154$condition <- "sorbic"
+
+rel<-rbind(acrel154,berel154, burel154, cirel154,marel154,prrel154,sorel154)
+
+write.table(rel, file = "Table-ST4.txt", sep = "\t")
+
+#Supplementary Table 5 - minimum interaction term estimates (relmin)
+write.table (relmin, file = "Table-ST5.txt", sep = "\t")
+```
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
