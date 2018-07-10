@@ -7,14 +7,24 @@ Synergistic impacts of organic acids and pH on growth of Pseudomonas aeruginosa 
 ## Requirements
 
 ### Preprocessing
-* 
+* Written in Python version 
+* See preprocess.ipynb
+* Dependencies 
+  * pandas 
+  * numpy
+  * re
+  * os
+  * pickle
+  * patsy
 
 ### Running _phenom_
-* 
+* See run.ipynb
+* Same dependencies as preprocessing
 
 ### Running logistic models 
 * Written in MatLab version
-* 
+* Use estimate_logistic_parameters.m 
+* Use logged_logisticfitfunction.m
 
 ### Post-hoc analysis 
 * Written in R version 3.3.2 or RStudio version 1.1.383
@@ -28,3 +38,5 @@ Synergistic impacts of organic acids and pH on growth of Pseudomonas aeruginosa 
   * Hmisc
   * corrplot
   * rpgm
+* See lund_pseudo_collab_FINAL.Rmd  
+
