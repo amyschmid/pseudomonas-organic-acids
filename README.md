@@ -32,7 +32,7 @@ Synergistic impacts of organic acids and pH on growth of _Pseudomonas aeruginosa
 * Output: logistic_output
 
 ### Post-hoc analysis 
-* Written in R version 3.3.2 or RStudio version 1.1.383
+* Written in RStudio version 1.1.383
 * R packages (version used)
   * ggplot2 (2.2.1)
   * tidyr (0.7.2)
